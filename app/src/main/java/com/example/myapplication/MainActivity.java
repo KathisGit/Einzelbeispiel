@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText et;
     private Button btn;
+    private Button btnBerechne;
     private TextView tv;
 
     private Client client;
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         et=(EditText) findViewById(R.id.Matrikelnummer);
         tv=(TextView) findViewById(R.id.ServerAntwort);
         btn=(Button) findViewById(R.id.button);
+        btnBerechne=(Button) findViewById(R.id.btnBerechnen);
 
         //EventListener to SendToServer-Button
         btn.setOnClickListener(new View.OnClickListener() {
@@ -58,6 +60,13 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),"Internet ist nicht verfügbar!",Toast.LENGTH_SHORT).show();
                 }
 
+            }
+        });
+
+        btnBerechne.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sortNumbersBySize(et.getText().toString());
             }
         });
     }
@@ -82,6 +91,62 @@ public class MainActivity extends AppCompatActivity {
         //set Text of Textview (Answer from Server)
         tv.setText(client.getAnswer());
 
+    }
+
+    //sort Numbers by Size without Prime Numbers
+    public void sortNumbersBySize(String Matrikelnummer){
+        //get char Array without Prime Numbers
+        char[]StringToChar=deletePrime(Matrikelnummer).toCharArray();
+        char temp;
+
+        //Bubblesort Algorithmus
+        for (int i=0;i<Matrikelnummer.length();i++){
+            for (int j=0;j<Matrikelnummer.length()-1;j++){
+                if (StringToChar[j]>StringToChar[j+1]){
+                    temp=StringToChar[j];
+                    StringToChar[j]=StringToChar[j+1];
+                    StringToChar[j+1]=temp;
+                }
+            }
+        }
+
+        //set Text of Textview to sorted String
+        tv.setText(new String(StringToChar));
+    }
+
+    //return String without Prime Numbers
+    public String deletePrime(String Matrikelnummer){
+        char[] charWithoutPrime=new char[Matrikelnummer.length()];
+        int j=0;
+
+        for (int i=0;i<Matrikelnummer.length();i++){
+            if (!isPrim(Character.getNumericValue(Matrikelnummer.charAt(i)))){
+                charWithoutPrime[j++]=Matrikelnummer.charAt(i);
+            }
+        }
+        return new String(charWithoutPrime);
+    }
+
+    //check if Number is Prime
+    public boolean isPrim(int a){
+        //0,1 are not prime
+        if(a==0||a==1)
+            return false;
+        //2 is Prime
+        else if(a==2)
+            return true;
+
+        //if Number is divisable it is not prime
+        else {
+
+            for (int i = 2; i < a; i++) {
+                if (a % i == 0)
+                    return false;
+            }
+        }
+
+        //else it is prime
+        return true;
     }
 
 
